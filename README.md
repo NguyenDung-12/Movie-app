@@ -13,6 +13,8 @@ Dự án ứng dụng xem thông tin phim, xây dựng trên nền tảng React 
   - **Đặt nhánh chính**: `git branch -M main`
   - **Cập nhật lên Git**:
     ```bash
+    git remote add origin "......link"
+    git push -u origin main
     git status
     git add .
     git commit -m "feat: mô tả thay đổi"
