@@ -1,13 +1,12 @@
-import MovieCard from "@/components/MovieCard";
-import { formatPosterUrl, getPopularMovies } from "@/services/api";
 import { useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  FlatList,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
+import { formatPosterUrl, getPopularMovies } from "../../services/api";
+
+// Đảm bảo import không có dấu ngoặc nhọn {}
+import SectionHeader from "@/components/SectionHeader";
+import Header from "../../components/Header";
+import MovieCard from "../../components/MovieCard";
+import SearchBar from "../../components/SearchBar";
 
 interface Movie {
   id: number;
@@ -26,30 +25,19 @@ export default function HomeScreen() {
         setLoading(true);
         const data = await getPopularMovies();
         setMovies(data);
-        setError(null);
       } catch (err) {
         setError("Lỗi tải phim");
-        console.error(err);
       } finally {
         setLoading(false);
       }
     };
-
     fetchMovies();
   }, []);
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View style={styles.center}>
         <ActivityIndicator size="large" color="#208AEF" />
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>{error}</Text>
       </View>
     );
   }
@@ -57,6 +45,16 @@ export default function HomeScreen() {
   return (
     <FlatList
       data={movies}
+      style={styles.mainContainer}
+      contentContainerStyle={styles.listContent}
+      // ĐƯA TẤT CẢ VÀO ĐÂY ĐỂ CHÚNG CUỘN CÙNG NHAU
+      ListHeaderComponent={
+        <>
+          <Header />
+          <SearchBar />
+          <SectionHeader title="Popular Movies" />
+        </>
+      }
       renderItem={({ item }) => (
         <MovieCard
           title={item.title}
@@ -66,34 +64,26 @@ export default function HomeScreen() {
       keyExtractor={(item) => item.id.toString()}
       numColumns={2}
       columnWrapperStyle={styles.row}
-      contentContainerStyle={styles.container}
     />
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#f5f5f5",
-    paddingTop: 20,
-    paddingHorizontal: 10,
+  mainContainer: {
+    flex: 1,
+    backgroundColor: "#121212",
+  },
+  listContent: {
+    paddingBottom: 20,
   },
   row: {
     justifyContent: "space-between",
+    paddingHorizontal: 10,
   },
-  loadingContainer: {
+  center: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f5f5f5",
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#f5f5f5",
-  },
-  errorText: {
-    fontSize: 16,
-    color: "red",
+    backgroundColor: "#121212",
   },
 });

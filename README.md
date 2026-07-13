@@ -1,50 +1,70 @@
-# Welcome to your Expo app 👋
+# 🎬 Movie App Project
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Dự án ứng dụng xem thông tin phim, xây dựng trên nền tảng React Native (Expo).
 
-## Get started
+## 🛠 1. Môi trường cài đặt (Prerequisites)
 
-1. Install dependencies
+Để dự án này hoạt động, bạn cần cài đặt các công cụ sau trên máy tính:
 
-   ```bash
-   npm install
-   ```
+- **Node.js**: Phiên bản LTS (Long Term Support).
+- **Git**: Để quản lý phiên bản code.
+  - **Khởi tạo Git**: `git init`
+  - **Liên kết với GitHub**: `git remote add origin <link-repo>`
+  - **Đặt nhánh chính**: `git branch -M main`
+  - **Cập nhật lên Git**:
+    ```bash
+    git status
+    git add .
+    git commit -m "feat: mô tả thay đổi"
+    git push -u origin main
+    ```
+- **VS Code**: Trình soạn thảo mã nguồn.
+- **Expo Go**: Cài đặt trên điện thoại để xem ứng dụng thời gian thực.
 
-2. Start the app
+## 🚀 2. Cách khởi chạy dự án
 
-   ```bash
-   npx expo start
-   ```
+Để chạy ứng dụng trên máy của bạn, hãy thực hiện các bước sau trong Terminal:
 
-In the output, you'll find options to open the app in a
+1. **Clone dự án**: `git clone <link-repo>`
+2. **Di chuyển vào thư mục**: `cd movie-app`
+3. **Cài đặt thư viện**: `npm install`
+4. **Khởi chạy**: `npx expo start`
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## 📝 3. Nhật ký phát triển (Project Logs)
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- **10/07/2026**: Khởi tạo dự án `movie-app` với Expo SDK 57. Cấu hình ESLint và Prettier.
 
-## Get a fresh project
+- **11/07/2026**: Xây dựng cấu trúc MovieCard và xử lý lỗi môi trường.
+  - Tạo `src/components/MovieCard.tsx` và cấu hình `src/app/index.tsx`.
+  - Khắc phục lỗi xung đột phiên bản React (`19.2.7` vs `19.2.3`).
 
-When you're ready, run:
+- **11/07/2026**: Kiểm chứng và xử lý lỗi hiển thị Component.
+  - Xác định vấn đề CORS khi lấy ảnh TMDB trên trình duyệt.
+  - Quyết định: Nâng cấp thư viện `Image` và dùng `FlatList`.
 
-```bash
-npm run reset-project
-```
+- **11/07/2026**: Nâng cấp thư viện hình ảnh và chuẩn hóa giao diện.
+  - Tích hợp `expo-image` thay thế `react-native` Image.
+  - Hiệu chỉnh `contentFit`, `transition`.
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+- **11/07/2026**: Thêm tính năng tương tác cho `MovieCard`.
+  - Bọc `TouchableOpacity` và thêm hàm `handleCardPress`.
 
-## Learn more
+- **11/07/2026**: Chuyển đổi sang danh sách động với `FlatList`.
+  - Tối ưu hiệu năng, thiết lập `numColumns={2}` dàn trang dạng lưới.
 
-To learn more about developing your project with Expo, look at the following resources:
+- **11/07/2026**: Tái cấu trúc (Refactor) code.
+  - Tách danh sách phim vào `src/data/movies.ts`.
+  - Cập nhật `HomeScreen` import dữ liệu module ngoài.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+- **12/07/2026**:
+  - Hạ tầng API: Hoàn thiện `api.js` sử dụng `axios`.
+  - \*\*Giao diện danh sách: Triển khai `index.tsx` với `FlatList`.
+  - Xử lý trạng thái: Tích hợp loading (spinner) và xử lý lỗi (error handling).
+  - Tích hợp TMDB: Kết nối API thực từ TMDB, hiển thị poster động.
 
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- **13/07/2026**: Hoàn thiện cấu trúc UI, Navigation và xử lý lỗi tích hợp Component.
+  - Sửa lỗi hệ thống: Giải quyết triệt để lỗi Element type is invalid: got: object trong `HomeScreen` bằng cách chuẩn hóa toàn bộ các tệp `component` sang export default và loại bỏ các dấu ngoặc nhọn {} không cần thiết khi import.
+  - Tái cấu trúc file: Tách biệt `SearchBar.tsx` và `SectionHeader.tsx` thành các tệp tin độc lập, khắc phục xung đột xuất khẩu (export) và lỗi cú pháp khi gộp chung tệp.
+  - Tối ưu giao diện: Đưa toàn bộ các thành phần `Header, SearchBar, và SectionHeader vào ListHeaderComponent` của FlatList để đảm bảo tính đồng bộ khi cuộn trang và tránh lỗi lồng ghép view.
+  - Hoàn thiện Navigation: Cấu hình `_layout.tsx` trong thư mục (tabs) để khởi tạo thanh điều hướng `(Bottom Tabs) với hai tab "Home" và "Explore"`, sử dụng @expo/vector-icons và thiết lập màu sắc đồng bộ với giao diện tối của ứng dụng.
+  - Kiểm chứng (Debug): Sử dụng kỹ thuật loại trừ `(comment code) và in log (console.log)` để xác định chính xác vị trí lỗi trong quy trình render của `HomeScreen`.
