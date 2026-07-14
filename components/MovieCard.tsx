@@ -1,35 +1,44 @@
 import { Image } from "expo-image";
-import { useState } from "react";
-import {
-    ActivityIndicator,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-} from "react-native";
+import { router } from "expo-router";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface MovieCardProps {
+  id: number;
   title: string;
   posterUrl: string;
+  rating: number;
+  releaseDate: string;
 }
 
-export default function MovieCard({ title, posterUrl }: MovieCardProps) {
-  const [isLoading, setIsLoading] = useState(true);
-
+export default function MovieCard({
+  id,
+  title,
+  posterUrl,
+  rating,
+  releaseDate,
+}: MovieCardProps) {
   return (
-    <TouchableOpacity onPress={() => console.log("Click:", title)}>
+    <TouchableOpacity
+      onPress={() => {
+        router.push({
+          pathname: "/movie/[id]",
+          params: {
+            id: id.toString(),
+          },
+        });
+      }}
+    >
       <View style={styles.card}>
-        {isLoading && (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#999" />
-          </View>
-        )}
+        <View style={styles.infoRow}>
+          <Text style={styles.rating}>⭐ {rating.toFixed(1)}</Text>
+
+          <Text style={styles.year}>{releaseDate.substring(0, 4)}</Text>
+        </View>
         <Image
           source={{ uri: posterUrl }}
           style={styles.poster}
           contentFit="cover"
           transition={500}
-          onLoadEnd={() => setIsLoading(false)}
           onError={(error) => console.log("Image error:", error)}
         />
         <Text style={styles.title} numberOfLines={2}>
@@ -42,33 +51,63 @@ export default function MovieCard({ title, posterUrl }: MovieCardProps) {
 
 const styles = StyleSheet.create({
   card: {
-    margin: 10,
-    borderRadius: 12,
-    backgroundColor: "#fff",
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOpacity: 0.2,
-    width: 160,
+    width: 170,
+    marginBottom: 18,
+    backgroundColor: "#1E1E1E",
+    borderRadius: 16,
+    overflow: "hidden",
   },
+
   poster: {
     width: "100%",
-    height: 240,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
-    backgroundColor: "#f0f0f0",
+    height: 260,
   },
+
   loadingContainer: {
+    position: "absolute",
+
     width: "100%",
-    height: 240,
+
+    height: 250,
+
     justifyContent: "center",
+
     alignItems: "center",
-    backgroundColor: "#f0f0f0",
+
+    backgroundColor: "#2A2A2A",
+
+    zIndex: 1,
   },
+
   title: {
-    padding: 10,
-    fontSize: 14,
+    color: "#FFF",
+
+    fontSize: 15,
+
+    fontWeight: "600",
+
+    paddingHorizontal: 10,
+
+    paddingTop: 10,
+  },
+
+  infoRow: {
+    flexDirection: "row",
+
+    justifyContent: "space-between",
+
+    paddingHorizontal: 10,
+
+    paddingVertical: 10,
+  },
+
+  rating: {
+    color: "#FFD54F",
+
     fontWeight: "bold",
-    textAlign: "center",
-    color: "#333",
+  },
+
+  year: {
+    color: "#AAAAAA",
   },
 });

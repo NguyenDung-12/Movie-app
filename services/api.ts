@@ -14,8 +14,18 @@ export interface Movie {
   id: number;
   title: string;
   poster_path: string;
+  vote_average: number;
+  release_date: string;
 }
-
+export interface MovieDetail extends Movie {
+  overview: string;
+  backdrop_path: string;
+  runtime: number;
+  genres: {
+    id: number;
+    name: string;
+  }[];
+}
 export const getPopularMovies = async (page: number = 1): Promise<Movie[]> => {
   try {
     const response = await apiClient.get("/movie/popular", {
@@ -28,7 +38,31 @@ export const getPopularMovies = async (page: number = 1): Promise<Movie[]> => {
     return [];
   }
 };
+export const getTopRatedMovies = async (): Promise<Movie[]> => {
+  try {
+    const response = await apiClient.get("/movie/top_rated");
 
+    return response.data.results;
+  } catch (error) {
+    console.error("Error fetching top rated movies:", error);
+    return [];
+  }
+};
+export const getTrendingMovies = async (): Promise<Movie[]> => {
+  try {
+    const response = await apiClient.get("/trending/movie/day");
+
+    return response.data.results;
+  } catch (error) {
+    console.error("Error fetching trending movies:", error);
+    return [];
+  }
+};
+
+export const getMovieDetail = async (id: number): Promise<MovieDetail> => {
+  const response = await apiClient.get(`/movie/${id}`);
+  return response.data;
+};
 export const formatPosterUrl = (posterPath: string) => {
   return `https://image.tmdb.org/t/p/w500${posterPath}`;
 };

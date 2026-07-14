@@ -9,21 +9,8 @@ export default function Header() {
   );
 }
 
-// Bắt buộc phải nằm ở cuối file
 const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 15,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: "bold",
-    color: "#fff",
-  },
-  subtitle: {
-    marginTop: 5,
-    fontSize: 16,
-    color: "#aaa",
-  },
+  container: { paddingHorizontal: 20, paddingTop: 20, paddingBottom: 15 },
+  title: { fontSize: 32, fontWeight: "bold", color: "#fff" },
+  subtitle: { marginTop: 5, fontSize: 16, color: "#aaa" },
 });

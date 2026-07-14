@@ -14,11 +14,11 @@ Dự án ứng dụng xem thông tin phim, xây dựng trên nền tảng React 
   - **Cập nhật lên Git**:
     ```bash
     git remote add origin "......link"
-    git push -u origin main
-    git status
+    git branch -M main
     git add .
     git commit -m "feat: mô tả thay đổi"
     git push -u origin main
+    git push -u origin main --force ép buộc push <dangerous>
     ```
 - **VS Code**: Trình soạn thảo mã nguồn.
 - **Expo Go**: Cài đặt trên điện thoại để xem ứng dụng thời gian thực.
