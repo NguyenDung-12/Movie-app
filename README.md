@@ -70,3 +70,11 @@ Dự án ứng dụng xem thông tin phim, xây dựng trên nền tảng React 
   - Tối ưu giao diện: Đưa toàn bộ các thành phần `Header, SearchBar, và SectionHeader vào ListHeaderComponent` của FlatList để đảm bảo tính đồng bộ khi cuộn trang và tránh lỗi lồng ghép view.
   - Hoàn thiện Navigation: Cấu hình `_layout.tsx` trong thư mục (tabs) để khởi tạo thanh điều hướng `(Bottom Tabs) với hai tab "Home" và "Explore"`, sử dụng @expo/vector-icons và thiết lập màu sắc đồng bộ với giao diện tối của ứng dụng.
   - Kiểm chứng (Debug): Sử dụng kỹ thuật loại trừ `(comment code) và in log (console.log)` để xác định chính xác vị trí lỗi trong quy trình render của `HomeScreen`.
+- **15/07/2026**: Nâng cấp giao diện Home Screen và triển khai nền tảng Movie Detail.
+  - Hoàn thiện giao diện: Thiết kế lại `HomeScreen` theo phong cách ứng dụng xem phim với giao diện tối, bổ sung `Header`, `SearchBar`, `HeroBanner`, `SectionHeader` và tối ưu bố cục hiển thị.
+  - Xây dựng Component: Tạo `HeroBanner.tsx` để hiển thị bộ phim nổi bật đầu trang và `HorizontalMovieList.tsx` để tái sử dụng cho các danh sách phim cuộn ngang.
+  - Mở rộng API: Bổ sung các hàm `getTrendingMovies()`, `getTopRatedMovies()` và `getMovieDetail()` trong `services/api.ts`, đồng thời mở rộng interface `Movie` và `MovieDetail` để hỗ trợ đầy đủ dữ liệu từ TMDB.
+  - Hoàn thiện danh sách phim: Tích hợp ba nhóm dữ liệu gồm `Trending Movies`, `Top Rated Movies` và `Popular Movies`, kết hợp `FlatList` cùng các danh sách cuộn ngang nhằm tạo giao diện tương tự các ứng dụng xem phim phổ biến.
+  - Nâng cấp `MovieCard`: Bổ sung hiển thị điểm đánh giá, năm phát hành và cấu hình điều hướng bằng `Expo Router` để chuyển sang màn hình chi tiết phim thông qua `router.push()` và Dynamic Route (`/movie/[id]`).
+  - Khắc phục lỗi tích hợp: Xử lý lỗi import API, lỗi thiếu thuộc tính `id`, cập nhật Typed Routes của Expo Router và sửa các lỗi TypeScript phát sinh khi đồng bộ giữa `MovieCard`, `HorizontalMovieList` và `HomeScreen`.
+  - Chuẩn bị Movie Detail: Khởi tạo cấu trúc `app/movie/[id].tsx`, xây dựng API lấy thông tin chi tiết phim và sẵn sàng triển khai giao diện hiển thị poster, backdrop, đánh giá, thời lượng và nội dung mô tả của từng bộ phim.
