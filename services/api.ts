@@ -26,6 +26,19 @@ export interface MovieDetail extends Movie {
     name: string;
   }[];
 }
+export interface CastMember {
+  id: number;
+  name: string;
+  character: string;
+  profile_path: string | null;
+}
+export interface MovieVideo {
+  id: string;
+  key: string;
+  name: string;
+  site: string;
+  type: string;
+}
 export const getPopularMovies = async (page: number = 1): Promise<Movie[]> => {
   try {
     const response = await apiClient.get("/movie/popular", {
@@ -65,4 +78,12 @@ export const getMovieDetail = async (id: number): Promise<MovieDetail> => {
 };
 export const formatPosterUrl = (posterPath: string) => {
   return `https://image.tmdb.org/t/p/w500${posterPath}`;
+};
+export const getMovieVideos = async (id: number): Promise<MovieVideo[]> => {
+  const response = await apiClient.get(`/movie/${id}/videos`);
+  return response.data.results;
+};
+export const getMovieCredits = async (id: number): Promise<CastMember[]> => {
+  const response = await apiClient.get(`/movie/${id}/credits`);
+  return response.data.cast;
 };

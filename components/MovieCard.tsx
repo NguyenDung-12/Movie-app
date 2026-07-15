@@ -20,10 +20,12 @@ export default function MovieCard({
   return (
     <TouchableOpacity
       onPress={() => {
+        console.log("Navigate to:", id);
+
         router.push({
           pathname: "/movie/[id]",
           params: {
-            id: id.toString(),
+            id: String(id),
           },
         });
       }}

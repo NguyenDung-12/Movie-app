@@ -6,6 +6,8 @@ interface Movie {
   id: number;
   title: string;
   poster_path: string;
+  vote_average: number;
+  release_date: string;
 }
 
 interface MovieGridProps {
@@ -21,8 +23,11 @@ export default function MovieGrid({ movies }: MovieGridProps) {
       numColumns={2}
       renderItem={({ item }) => (
         <MovieCard
+          id={item.id}
           title={item.title}
           posterUrl={formatPosterUrl(item.poster_path)}
+          rating={item.vote_average}
+          releaseDate={item.release_date}
         />
       )}
       columnWrapperStyle={styles.row}
