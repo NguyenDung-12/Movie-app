@@ -64,7 +64,7 @@ export default function MovieDetailScreen() {
           const similarData = await getSimilarMovies(movieId);
           setSimilarMovies(similarData.slice(0, 10));
         } catch (error) {
-          console.log("Similar Error:", error);
+          console.log("Similar Movies Error:", error);
         }
       } finally {
         setLoading(false);
@@ -167,7 +167,6 @@ export default function MovieDetailScreen() {
         {similarMovies.length > 0 && (
           <>
             <Text style={styles.section}>Similar Movies</Text>
-
             <SimilarMovies movies={similarMovies} />
           </>
         )}

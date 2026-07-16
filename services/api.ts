@@ -39,6 +39,13 @@ export interface MovieVideo {
   site: string;
   type: string;
 }
+export interface SimilarMovie {
+  id: number;
+  title: string;
+  poster_path: string;
+  vote_average: number;
+  release_date: string;
+}
 export const getPopularMovies = async (page: number = 1): Promise<Movie[]> => {
   try {
     const response = await apiClient.get("/movie/popular", {
@@ -86,4 +93,16 @@ export const getMovieVideos = async (id: number): Promise<MovieVideo[]> => {
 export const getMovieCredits = async (id: number): Promise<CastMember[]> => {
   const response = await apiClient.get(`/movie/${id}/credits`);
   return response.data.cast;
+};
+export const getSimilarMovies = async (
+  movieId: number,
+): Promise<SimilarMovie[]> => {
+  try {
+    const response = await apiClient.get(`/movie/${movieId}/similar`);
+
+    return response.data.results ?? [];
+  } catch (error) {
+    console.log("Get similar movies error:", error);
+    return [];
+  }
 };
