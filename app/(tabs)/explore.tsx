@@ -28,36 +28,77 @@ export default function ExploreScreen() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [loadingMore, setLoadingMore] = useState(false);
 
-  const handleSearch = useCallback(
-    async (keywordFromHome?: string) => {
-      const keyword = (keywordFromHome ?? searchQuery).trim();
+  const handleLoadMore = async () => {
+    if (loading || loadingMore || !hasSearched || currentPage >= totalPages) {
+      return;
+    }
 
-      Keyboard.dismiss();
+    try {
+      setLoadingMore(true);
 
-      if (!keyword) {
-        setMovies([]);
-        setHasSearched(false);
-        return;
-      }
+      const nextPage = currentPage + 1;
 
-      try {
-        setLoading(true);
-        setHasSearched(true);
-        setSearchQuery(keyword);
+      const response = await searchMovies(searchQuery, nextPage);
 
-        const results = await searchMovies(keyword);
-        setMovies(Array.isArray(results) ? results : []);
-      } catch (error) {
-        console.log("Explore search error:", error);
-        setMovies([]);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [searchQuery],
-  );
+      setMovies((previousMovies) => {
+        const existingIds = new Set(previousMovies.map((movie) => movie.id));
 
+        const uniqueNewMovies = response.results.filter(
+          (movie) => !existingIds.has(movie.id),
+        );
+
+        return [...previousMovies, ...uniqueNewMovies];
+      });
+
+      setCurrentPage(response.page);
+      setTotalPages(response.total_pages);
+    } catch (error) {
+      console.log("Load more search results error:", error);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+  const performSearch = useCallback(async (keywordValue: string) => {
+    const keyword = keywordValue.trim();
+
+    Keyboard.dismiss();
+
+    if (!keyword) {
+      setMovies([]);
+      setHasSearched(false);
+      setCurrentPage(1);
+      setTotalPages(0);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setHasSearched(true);
+      setSearchQuery(keyword);
+
+      const response = await searchMovies(keyword, 1);
+
+      setMovies(response.results);
+      setCurrentPage(response.page);
+      setTotalPages(response.total_pages);
+    } catch (error) {
+      console.log("Explore search error:", error);
+
+      setMovies([]);
+      setCurrentPage(1);
+      setTotalPages(0);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const handleSearch = () => {
+    performSearch(searchQuery);
+  };
   useFocusEffect(
     useCallback(() => {
       if (!routeQuery) {
@@ -69,14 +110,16 @@ export default function ExploreScreen() {
       }
 
       lastRouteQuery.current = routeQuery;
-      handleSearch(routeQuery);
-    }, [routeQuery, handleSearch]),
+      performSearch(routeQuery);
+    }, [routeQuery, performSearch]),
   );
 
   const handleClearSearch = () => {
     setSearchQuery("");
     setMovies([]);
     setHasSearched(false);
+    setCurrentPage(1);
+    setTotalPages(0);
   };
 
   return (
@@ -99,7 +142,7 @@ export default function ExploreScreen() {
           returnKeyType="search"
           autoCapitalize="none"
           autoCorrect={false}
-          onSubmitEditing={() => handleSearch()}
+          onSubmitEditing={handleSearch}
         />
 
         {(searchQuery ?? "").length > 0 && (
@@ -111,7 +154,7 @@ export default function ExploreScreen() {
         <TouchableOpacity
           style={styles.searchButton}
           activeOpacity={0.8}
-          onPress={() => handleSearch()}
+          onPress={handleSearch}
         >
           <Ionicons name="search" size={19} color="#ffffff" />
         </TouchableOpacity>
@@ -144,29 +187,50 @@ export default function ExploreScreen() {
           </Text>
         </View>
       ) : (
-        <FlatList
-          data={movies ?? []}
-          keyExtractor={(item) => item.id.toString()}
-          numColumns={2}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-          contentContainerStyle={styles.listContent}
-          columnWrapperStyle={styles.columnWrapper}
-          ListHeaderComponent={
+        <View style={styles.resultsContainer}>
+          <View style={styles.resultHeader}>
             <Text style={styles.resultText}>
               {movies.length} results for “{searchQuery}”
             </Text>
-          }
-          renderItem={({ item }) => (
-            <MovieCard
-              id={item.id}
-              title={item.title}
-              posterUrl={formatPosterUrl(item.poster_path)}
-              rating={item.vote_average}
-              releaseDate={item.release_date}
-            />
-          )}
-        />
+
+            <Text style={styles.pageText}>
+              Page {currentPage}/{totalPages}
+            </Text>
+          </View>
+
+          <FlatList
+            data={movies}
+            keyExtractor={(item) => item.id.toString()}
+            numColumns={2}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={styles.listContent}
+            columnWrapperStyle={styles.columnWrapper}
+            onEndReached={handleLoadMore}
+            onEndReachedThreshold={0.4}
+            renderItem={({ item }) => (
+              <MovieCard
+                id={item.id}
+                title={item.title}
+                posterUrl={formatPosterUrl(item.poster_path)}
+                rating={item.vote_average}
+                releaseDate={item.release_date}
+              />
+            )}
+            ListFooterComponent={
+              loadingMore ? (
+                <View style={styles.footerLoading}>
+                  <ActivityIndicator size="small" color="#e50914" />
+                  <Text style={styles.footerText}>Loading more movies...</Text>
+                </View>
+              ) : currentPage >= totalPages &&
+                movies.length > 0 &&
+                totalPages > 0 ? (
+                <Text style={styles.endText}>No more search results</Text>
+              ) : null
+            }
+          />
+        </View>
       )}
     </SafeAreaView>
   );
@@ -259,10 +323,47 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
 
+  footerLoading: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 24,
+  },
+
+  footerText: {
+    color: "#999999",
+    fontSize: 14,
+    marginLeft: 10,
+  },
+
+  endText: {
+    color: "#777777",
+    fontSize: 13,
+    textAlign: "center",
+    paddingVertical: 24,
+  },
+  resultsContainer: {
+    flex: 1,
+  },
+
+  resultHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+  },
+
   resultText: {
+    flex: 1,
     color: "#b5b5b5",
     fontSize: 14,
-    marginHorizontal: 6,
-    marginBottom: 18,
+    marginRight: 10,
+  },
+
+  pageText: {
+    color: "#e50914",
+    fontSize: 14,
+    fontWeight: "bold",
   },
 });

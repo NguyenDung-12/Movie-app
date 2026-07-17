@@ -46,6 +46,11 @@ export interface SimilarMovie {
   vote_average: number;
   release_date: string;
 }
+export interface SearchMoviesResponse {
+  results: Movie[];
+  page: number;
+  total_pages: number;
+}
 export const getPopularMovies = async (page: number = 1): Promise<Movie[]> => {
   try {
     const response = await apiClient.get("/movie/popular", {
@@ -108,25 +113,45 @@ export const getSimilarMovies = async (
     return [];
   }
 };
-export const searchMovies = async (query: string): Promise<Movie[]> => {
+export const searchMovies = async (
+  query: string,
+  page: number = 1,
+): Promise<SearchMoviesResponse> => {
   const keyword = query.trim();
 
   if (!keyword) {
-    return [];
+    return {
+      results: [],
+      page: 1,
+      total_pages: 0,
+    };
   }
 
   try {
     const response = await apiClient.get("/search/movie", {
       params: {
         query: keyword,
+        page,
         include_adult: false,
-        page: 1,
       },
     });
 
-    return Array.isArray(response.data.results) ? response.data.results : [];
+    console.log("TMDB search:", response.data);
+
+    return {
+      results: Array.isArray(response.data.results)
+        ? response.data.results
+        : [],
+      page: response.data.page ?? page,
+      total_pages: response.data.total_pages ?? 0,
+    };
   } catch (error) {
     console.log("Search movies error:", error);
-    return [];
+
+    return {
+      results: [],
+      page,
+      total_pages: 0,
+    };
   }
 };
