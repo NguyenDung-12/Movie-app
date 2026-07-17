@@ -41,7 +41,6 @@ export default function MovieCard({
           style={styles.poster}
           contentFit="cover"
           transition={500}
-          onError={(error) => console.log("Image error:", error)}
         />
         <Text style={styles.title} numberOfLines={2}>
           {title}
