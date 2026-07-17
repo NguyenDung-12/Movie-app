@@ -2,7 +2,7 @@ import MovieCard from "@/components/MovieCard";
 import { formatPosterUrl, searchMovies, type Movie } from "@/services/api";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect, useLocalSearchParams } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -23,7 +23,7 @@ export default function ExploreScreen() {
   const routeQuery = Array.isArray(params.query)
     ? params.query[0]
     : (params.query ?? "");
-
+  const lastRouteQuery = useRef("");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(false);
@@ -64,6 +64,11 @@ export default function ExploreScreen() {
         return;
       }
 
+      if (lastRouteQuery.current === routeQuery) {
+        return;
+      }
+
+      lastRouteQuery.current = routeQuery;
       handleSearch(routeQuery);
     }, [routeQuery, handleSearch]),
   );

@@ -49,12 +49,14 @@ export interface SimilarMovie {
 export const getPopularMovies = async (page: number = 1): Promise<Movie[]> => {
   try {
     const response = await apiClient.get("/movie/popular", {
-      params: { page },
+      params: {
+        page,
+      },
     });
 
-    return response.data.results;
+    return response.data.results ?? [];
   } catch (error) {
-    console.error("Error fetching movies:", error);
+    console.log("Get popular movies error:", error);
     return [];
   }
 };
