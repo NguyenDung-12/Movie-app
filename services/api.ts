@@ -106,3 +106,25 @@ export const getSimilarMovies = async (
     return [];
   }
 };
+export const searchMovies = async (query: string): Promise<Movie[]> => {
+  const keyword = query.trim();
+
+  if (!keyword) {
+    return [];
+  }
+
+  try {
+    const response = await apiClient.get("/search/movie", {
+      params: {
+        query: keyword,
+        include_adult: false,
+        page: 1,
+      },
+    });
+
+    return response.data.results ?? [];
+  } catch (error) {
+    console.log("Search movies error:", error);
+    return [];
+  }
+};

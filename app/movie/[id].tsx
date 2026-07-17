@@ -136,11 +136,24 @@ export default function MovieDetailScreen() {
         <Ionicons name="arrow-back" size={28} color="white" />
       </TouchableOpacity>
 
-      <Image
-        source={{ uri: formatPosterUrl(movie.backdrop_path) }}
-        style={styles.backdrop}
-        contentFit="cover"
-      />
+      {movie.backdrop_path ? (
+        <Image
+          source={{ uri: formatPosterUrl(movie.backdrop_path) }}
+          style={styles.backdrop}
+          contentFit="cover"
+        />
+      ) : movie.poster_path ? (
+        <Image
+          source={{ uri: formatPosterUrl(movie.poster_path) }}
+          style={styles.backdrop}
+          contentFit="cover"
+        />
+      ) : (
+        <View style={styles.noBackdrop}>
+          <Ionicons name="film-outline" size={70} color="#777" />
+          <Text style={styles.noBackdropText}>No image available</Text>
+        </View>
+      )}
 
       <View style={styles.content}>
         <View style={styles.titleRow}>
@@ -286,5 +299,18 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.5)",
     borderRadius: 20,
     padding: 8,
+  },
+  noBackdrop: {
+    width: "100%",
+    height: 250,
+    backgroundColor: "#2a2a2a",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  noBackdropText: {
+    color: "#999",
+    fontSize: 14,
+    marginTop: 10,
   },
 });
