@@ -32,58 +32,6 @@ Dự án ứng dụng xem thông tin phim, xây dựng trên nền tảng React 
 3. **Cài đặt thư viện**: `npm install`
 4. **Khởi chạy**: `npx expo start`
 
-## 📝 3. Nhật ký phát triển (Project Logs)
+## Nhật ký phát triển
 
-- **10/07/2026**: Khởi tạo dự án `movie-app` với Expo SDK 57. Cấu hình ESLint và Prettier.
-
-- **11/07/2026**: Xây dựng cấu trúc MovieCard và xử lý lỗi môi trường.
-  - Tạo `src/components/MovieCard.tsx` và cấu hình `src/app/index.tsx`.
-  - Khắc phục lỗi xung đột phiên bản React (`19.2.7` vs `19.2.3`).
-
-- **11/07/2026**: Kiểm chứng và xử lý lỗi hiển thị Component.
-  - Xác định vấn đề CORS khi lấy ảnh TMDB trên trình duyệt.
-  - Quyết định: Nâng cấp thư viện `Image` và dùng `FlatList`.
-
-- **11/07/2026**: Nâng cấp thư viện hình ảnh và chuẩn hóa giao diện.
-  - Tích hợp `expo-image` thay thế `react-native` Image.
-  - Hiệu chỉnh `contentFit`, `transition`.
-
-- **11/07/2026**: Thêm tính năng tương tác cho `MovieCard`.
-  - Bọc `TouchableOpacity` và thêm hàm `handleCardPress`.
-
-- **11/07/2026**: Chuyển đổi sang danh sách động với `FlatList`.
-  - Tối ưu hiệu năng, thiết lập `numColumns={2}` dàn trang dạng lưới.
-
-- **11/07/2026**: Tái cấu trúc (Refactor) code.
-  - Tách danh sách phim vào `src/data/movies.ts`.
-  - Cập nhật `HomeScreen` import dữ liệu module ngoài.
-
-- **12/07/2026**:
-  - Hạ tầng API: Hoàn thiện `api.js` sử dụng `axios`.
-  - \*\*Giao diện danh sách: Triển khai `index.tsx` với `FlatList`.
-  - Xử lý trạng thái: Tích hợp loading (spinner) và xử lý lỗi (error handling).
-  - Tích hợp TMDB: Kết nối API thực từ TMDB, hiển thị poster động.
-
-- **13/07/2026**: Hoàn thiện cấu trúc UI, Navigation và xử lý lỗi tích hợp Component.
-  - Sửa lỗi hệ thống: Giải quyết triệt để lỗi Element type is invalid: got: object trong `HomeScreen` bằng cách chuẩn hóa toàn bộ các tệp `component` sang export default và loại bỏ các dấu ngoặc nhọn {} không cần thiết khi import.
-  - Tái cấu trúc file: Tách biệt `SearchBar.tsx` và `SectionHeader.tsx` thành các tệp tin độc lập, khắc phục xung đột xuất khẩu (export) và lỗi cú pháp khi gộp chung tệp.
-  - Tối ưu giao diện: Đưa toàn bộ các thành phần `Header, SearchBar, và SectionHeader vào ListHeaderComponent` của FlatList để đảm bảo tính đồng bộ khi cuộn trang và tránh lỗi lồng ghép view.
-  - Hoàn thiện Navigation: Cấu hình `_layout.tsx` trong thư mục (tabs) để khởi tạo thanh điều hướng `(Bottom Tabs) với hai tab "Home" và "Explore"`, sử dụng @expo/vector-icons và thiết lập màu sắc đồng bộ với giao diện tối của ứng dụng.
-  - Kiểm chứng (Debug): Sử dụng kỹ thuật loại trừ `(comment code) và in log (console.log)` để xác định chính xác vị trí lỗi trong quy trình render của `HomeScreen`.
-- **15/07/2026**: Nâng cấp giao diện Home Screen và triển khai nền tảng Movie Detail.
-  - Hoàn thiện giao diện: Thiết kế lại `HomeScreen` theo phong cách ứng dụng xem phim với giao diện tối, bổ sung `Header`, `SearchBar`, `HeroBanner`, `SectionHeader` và tối ưu bố cục hiển thị.
-  - Xây dựng Component: Tạo `HeroBanner.tsx` để hiển thị bộ phim nổi bật đầu trang và `HorizontalMovieList.tsx` để tái sử dụng cho các danh sách phim cuộn ngang.
-  - Mở rộng API: Bổ sung các hàm `getTrendingMovies()`, `getTopRatedMovies()` và `getMovieDetail()` trong `services/api.ts`, đồng thời mở rộng interface `Movie` và `MovieDetail` để hỗ trợ đầy đủ dữ liệu từ TMDB.
-  - Hoàn thiện danh sách phim: Tích hợp ba nhóm dữ liệu gồm `Trending Movies`, `Top Rated Movies` và `Popular Movies`, kết hợp `FlatList` cùng các danh sách cuộn ngang nhằm tạo giao diện tương tự các ứng dụng xem phim phổ biến.
-  - Nâng cấp `MovieCard`: Bổ sung hiển thị điểm đánh giá, năm phát hành và cấu hình điều hướng bằng `Expo Router` để chuyển sang màn hình chi tiết phim thông qua `router.push()` và Dynamic Route (`/movie/[id]`).
-  - Khắc phục lỗi tích hợp: Xử lý lỗi import API, lỗi thiếu thuộc tính `id`, cập nhật Typed Routes của Expo Router và sửa các lỗi TypeScript phát sinh khi đồng bộ giữa `MovieCard`, `HorizontalMovieList` và `HomeScreen`.
-  - Chuẩn bị Movie Detail: Khởi tạo cấu trúc `app/movie/[id].tsx`, xây dựng API lấy thông tin chi tiết phim và sẵn sàng triển khai giao diện hiển thị poster, backdrop, đánh giá, thời lượng và nội dung mô tả của từng bộ phim.
-- **15/07/2026**: Hoàn thiện Movie Detail Screen, mở rộng API và tối ưu kiến trúc Component.
-  - Hoàn thiện giao diện: Xây dựng `MovieDetailScreen` hiển thị đầy đủ thông tin phim gồm `Backdrop`, tên phim, điểm đánh giá, năm phát hành, thời lượng, thể loại và `Overview`, đồng thời bổ sung nút quay lại (`Back Button`) và nút yêu thích (`Favorite`) bằng `Ionicons`.
-  - Mở rộng API: Bổ sung các hàm `getMovieVideos()`, `getMovieCredits()` và `getSimilarMovies()` trong `services/api.ts`, đồng thời xây dựng các interface `MovieVideo`, `CastMember` và `SimilarMovie` để chuẩn hóa dữ liệu trả về từ TMDB.
-  - Phát triển tính năng Trailer: Tích hợp chức năng `Watch Trailer`, lấy danh sách video từ TMDB, lọc trailer chính thức trên YouTube và mở bằng `Linking.openURL()`.
-  - Tái cấu trúc Component: Tách riêng `CastList.tsx` và `SimilarMovies.tsx` thành các Component độc lập, giúp giảm độ phức tạp của `MovieDetailScreen`, tăng khả năng tái sử dụng và thuận tiện cho việc bảo trì.
-  - Hoàn thiện hiển thị dữ liệu: Tích hợp API `Credits` để hiển thị danh sách diễn viên theo `Horizontal FlatList`, đồng thời tích hợp API `Similar Movies` để hiển thị các bộ phim liên quan và tái sử dụng `MovieCard` cho chức năng điều hướng.
-  - Chuẩn hóa TypeScript: Thay thế kiểu dữ liệu `any` bằng interface `MovieVideo`, đồng bộ kiểu dữ liệu giữa `API`, `Component` và `MovieDetailScreen` nhằm tăng tính an toàn của mã nguồn.
-  - Khắc phục lỗi tích hợp: Sửa lỗi điều hướng `Expo Router`, lỗi truyền tham số `id`, lỗi hiển thị `Movie not found`, đồng thời xử lý các lỗi TypeScript phát sinh khi đồng bộ giữa `MovieCard`, `MovieGrid`, `SimilarMovies` và `MovieDetailScreen`.
-  - Kiểm chứng (Debug): Sử dụng `console.log()` để kiểm tra giá trị `id`, dữ liệu trả về từ các API `Movie Detail`, `Credits` và `Similar Movies`, qua đó xác định và khắc phục các lỗi phát sinh trong quá trình tích hợp.
+Xem chi tiết tại [CHANGELOG.md](./CHANGELOG.md).
