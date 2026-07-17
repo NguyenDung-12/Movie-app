@@ -122,7 +122,7 @@ export const searchMovies = async (query: string): Promise<Movie[]> => {
       },
     });
 
-    return response.data.results ?? [];
+    return Array.isArray(response.data.results) ? response.data.results : [];
   } catch (error) {
     console.log("Search movies error:", error);
     return [];

@@ -20,9 +20,11 @@ import {
   getTrendingMovies,
   type Movie,
 } from "@/services/api";
+import { router } from "expo-router";
 
 export default function HomeScreen() {
   const [movies, setMovies] = useState<Movie[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [trendingMovies, setTrendingMovies] = useState<Movie[]>([]);
@@ -51,7 +53,20 @@ export default function HomeScreen() {
 
     fetchMovies();
   }, []);
+  const handleHomeSearch = () => {
+    const keyword = searchQuery.trim();
 
+    if (!keyword) {
+      return;
+    }
+
+    router.push({
+      pathname: "/explore",
+      params: {
+        query: keyword,
+      },
+    });
+  };
   // Loading
   if (loading) {
     return (
@@ -71,43 +86,51 @@ export default function HomeScreen() {
   }
 
   return (
-    <FlatList
-      data={movies}
-      style={styles.mainContainer}
-      contentContainerStyle={styles.listContent}
-      ListHeaderComponent={
-        <>
-          <Header />
+    <View style={styles.mainContainer}>
+      <Header />
 
-          <SearchBar />
+      <SearchBar
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+        onSubmitEditing={handleHomeSearch}
+        placeholder="Search for a movie..."
+      />
 
-          {movies.length > 0 && <HeroBanner movie={movies[0]} />}
+      <FlatList
+        data={movies}
+        numColumns={2}
+        keyExtractor={(item) => item.id.toString()}
+        showsVerticalScrollIndicator={false}
+        style={styles.movieList}
+        contentContainerStyle={styles.listContent}
+        columnWrapperStyle={styles.row}
+        keyboardShouldPersistTaps="handled"
+        ListHeaderComponent={
+          <View>
+            {movies.length > 0 && <HeroBanner movie={movies[0]} />}
 
-          <SectionHeader title="🔥 Trending" />
+            <SectionHeader title="Trending Movies" />
 
-          <HorizontalMovieList movies={trendingMovies} />
+            <HorizontalMovieList movies={trendingMovies} />
 
-          <SectionHeader title="⭐ Top Rated" />
+            <SectionHeader title="Top Rated Movies" />
 
-          <HorizontalMovieList movies={topRatedMovies} />
+            <HorizontalMovieList movies={topRatedMovies} />
 
-          <SectionHeader title="Popular Movies" />
-        </>
-      }
-      renderItem={({ item }) => (
-        <MovieCard
-          id={item.id}
-          title={item.title}
-          posterUrl={formatPosterUrl(item.poster_path)}
-          rating={item.vote_average}
-          releaseDate={item.release_date}
-        />
-      )}
-      keyExtractor={(item) => item.id.toString()}
-      numColumns={2}
-      columnWrapperStyle={styles.row}
-      showsVerticalScrollIndicator={false}
-    />
+            <SectionHeader title="Popular Movies" />
+          </View>
+        }
+        renderItem={({ item }) => (
+          <MovieCard
+            id={item.id}
+            title={item.title}
+            posterUrl={formatPosterUrl(item.poster_path)}
+            rating={item.vote_average}
+            releaseDate={item.release_date}
+          />
+        )}
+      />
+    </View>
   );
 }
 
@@ -115,6 +138,10 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     backgroundColor: "#121212",
+  },
+
+  movieList: {
+    flex: 1,
   },
 
   listContent: {

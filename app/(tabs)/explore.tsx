@@ -1,7 +1,8 @@
 import MovieCard from "@/components/MovieCard";
 import { formatPosterUrl, searchMovies, type Movie } from "@/services/api";
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
+import { useFocusEffect, useLocalSearchParams } from "expo-router";
+import { useCallback, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -15,35 +16,57 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ExploreScreen() {
-  const [searchQuery, setSearchQuery] = useState("");
+  const params = useLocalSearchParams<{
+    query?: string | string[];
+  }>();
+
+  const routeQuery = Array.isArray(params.query)
+    ? params.query[0]
+    : (params.query ?? "");
+
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
-  const handleSearch = async () => {
-    const keyword = searchQuery.trim();
+  const handleSearch = useCallback(
+    async (keywordFromHome?: string) => {
+      const keyword = (keywordFromHome ?? searchQuery).trim();
 
-    Keyboard.dismiss();
+      Keyboard.dismiss();
 
-    if (!keyword) {
-      setMovies([]);
-      setHasSearched(false);
-      return;
-    }
+      if (!keyword) {
+        setMovies([]);
+        setHasSearched(false);
+        return;
+      }
 
-    try {
-      setLoading(true);
-      setHasSearched(true);
+      try {
+        setLoading(true);
+        setHasSearched(true);
+        setSearchQuery(keyword);
 
-      const results = await searchMovies(keyword);
-      setMovies(results);
-    } catch (error) {
-      console.log("Explore search error:", error);
-      setMovies([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+        const results = await searchMovies(keyword);
+        setMovies(Array.isArray(results) ? results : []);
+      } catch (error) {
+        console.log("Explore search error:", error);
+        setMovies([]);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [searchQuery],
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!routeQuery) {
+        return;
+      }
+
+      handleSearch(routeQuery);
+    }, [routeQuery, handleSearch]),
+  );
 
   const handleClearSearch = () => {
     setSearchQuery("");
@@ -71,10 +94,10 @@ export default function ExploreScreen() {
           returnKeyType="search"
           autoCapitalize="none"
           autoCorrect={false}
-          onSubmitEditing={handleSearch}
+          onSubmitEditing={() => handleSearch()}
         />
 
-        {searchQuery.length > 0 && (
+        {(searchQuery ?? "").length > 0 && (
           <TouchableOpacity onPress={handleClearSearch}>
             <Ionicons name="close-circle" size={20} color="#929292" />
           </TouchableOpacity>
@@ -83,7 +106,7 @@ export default function ExploreScreen() {
         <TouchableOpacity
           style={styles.searchButton}
           activeOpacity={0.8}
-          onPress={handleSearch}
+          onPress={() => handleSearch()}
         >
           <Ionicons name="search" size={19} color="#ffffff" />
         </TouchableOpacity>
@@ -105,7 +128,7 @@ export default function ExploreScreen() {
             Enter a movie title to start searching.
           </Text>
         </View>
-      ) : movies.length === 0 ? (
+      ) : (movies ?? []).length === 0 ? (
         <View style={styles.center}>
           <Ionicons name="search-outline" size={70} color="#e50914" />
 
@@ -117,7 +140,7 @@ export default function ExploreScreen() {
         </View>
       ) : (
         <FlatList
-          data={movies}
+          data={movies ?? []}
           keyExtractor={(item) => item.id.toString()}
           numColumns={2}
           showsVerticalScrollIndicator={false}
@@ -126,7 +149,7 @@ export default function ExploreScreen() {
           columnWrapperStyle={styles.columnWrapper}
           ListHeaderComponent={
             <Text style={styles.resultText}>
-              {movies.length} results for “{searchQuery.trim()}”
+              {movies.length} results for “{searchQuery}”
             </Text>
           }
           renderItem={({ item }) => (
