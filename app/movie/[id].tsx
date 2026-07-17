@@ -11,6 +11,7 @@ import {
   type MovieVideo,
   type SimilarMovie,
 } from "@/services/api";
+import { isMovieFavorite, toggleFavoriteMovie } from "@/services/favorites";
 
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
@@ -48,7 +49,11 @@ export default function MovieDetailScreen() {
       try {
         try {
           const movieData = await getMovieDetail(movieId);
+
           setMovie(movieData);
+
+          const savedFavorite = await isMovieFavorite(movieData.id);
+          setFavorite(savedFavorite);
         } catch (error) {
           console.log("Movie Detail Error:", error);
         }
@@ -94,7 +99,21 @@ export default function MovieDetailScreen() {
       Alert.alert("Lỗi", "Không thể mở trailer.");
     }
   };
+  const handleToggleFavorite = async () => {
+    if (!movie) {
+      return;
+    }
 
+    const newFavoriteState = await toggleFavoriteMovie({
+      id: movie.id,
+      title: movie.title,
+      poster_path: movie.poster_path,
+      vote_average: movie.vote_average,
+      release_date: movie.release_date,
+    });
+
+    setFavorite(newFavoriteState);
+  };
   if (loading) {
     return (
       <View style={styles.center}>
@@ -126,8 +145,7 @@ export default function MovieDetailScreen() {
       <View style={styles.content}>
         <View style={styles.titleRow}>
           <Text style={styles.title}>{movie.title}</Text>
-
-          <TouchableOpacity onPress={() => setFavorite(!favorite)}>
+          <TouchableOpacity onPress={handleToggleFavorite}>
             <Ionicons
               name={favorite ? "heart" : "heart-outline"}
               size={30}
