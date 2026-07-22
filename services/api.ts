@@ -1,6 +1,10 @@
 import axios from "axios";
 
-const API_KEY = "78e857e11ae07aec63cdf5f7b7592c37";
+const API_KEY = process.env.EXPO_PUBLIC_TMDB_API_KEY;
+
+if (!API_KEY) {
+  throw new Error("Khong tim thay TMDB API key");
+}
 const BASE_URL = "https://api.themoviedb.org/3";
 
 const apiClient = axios.create({
